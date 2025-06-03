@@ -181,6 +181,38 @@ const forgotPassword = async (req, res) => {
 // };
 
 
+const verifyForgotOtp = async (req, res) => {
+  const { email } = req.params;
+  const { otp: inputOtp } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (!user.otp || !user.otpExpiry || user.otpExpiry < new Date()) {
+      return res.status(400).json({ message: "OTP not valid or expired" });
+    }
+
+    if (user.otp !== inputOtp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+
+    // Generate token valid only for password reset
+    const token = generateToken(user._id); // short expiry if possible
+
+    res.status(200).json({
+      message: "OTP verified successfully",
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error verifying OTP", error: error.message });
+  }
+};
+
 const verifyOtp = async (req, res) => {
   const { email } = req.params;
   const { otp: inputOtp } = req.body;
@@ -220,12 +252,37 @@ const verifyOtp = async (req, res) => {
   }
 };
 
+// const resetPassword = async (req, res) => {
+//   const { email } = req.params;
+//   const { password } = req.body;
+
+//   try {
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       return res.status(404).send({ message: "User not found" });
+//     }
+
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(password, salt);
+
+//     user.password = hashedPassword;
+//     await user.save();
+
+//     return res.status(200).send({ message: "Password reset successful" });
+//   } catch (error) {
+//     return res.status(400).send({
+//       message: "Request Failed!",
+//       error: error.message || error,
+//     });
+//   }
+// };
+
 const resetPassword = async (req, res) => {
-  const { email } = req.params;
   const { password } = req.body;
+  const { userId } = req.auth; // From token
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
@@ -320,6 +377,7 @@ module.exports = {
   getUserByEmail,
   getUserDetails,
   forgotPassword,
+  verifyForgotOtp,
   verifyOtp,
   resetPassword,
   loginWithOtp,

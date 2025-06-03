@@ -11,6 +11,7 @@ const {
   resetPassword,
    loginWithOtp,
   verifyLoginOtp,
+  verifyForgotOtp
 } = require("../controllers/authController");
 
 const validateUser = require("../middleware/validateUser");
@@ -22,7 +23,10 @@ router.post("/login", loginUser);
 router.get("/user", verifyUserToken, getUserDetails);
 router.get("/user/:email", verifyUserToken, getUserByEmail);
 router.post("/forgot-password", forgotPassword);
-router.patch("/reset-password/:email", resetPassword);
+router.post("/forgot-otp/:email",verifyForgotOtp);
+// router.patch("/reset-password/:email", resetPassword);
+router.patch("/reset-password", verifyUserToken, resetPassword);
+
 router.post("/login-user", loginWithOtp); 
 router.post("/verify-login-otp/:email", verifyLoginOtp); 
 
