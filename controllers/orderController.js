@@ -57,4 +57,9 @@ async function getOrderDetails(req, res) {
   }
 }
 
-module.exports = { placeOrderFromCart, placeDirectOrder, getOrderDetails ,getInvoice};
+module.exports = {
+     placeOrderFromCart,
+      placeDirectOrder,
+       getOrderDetails ,
+       getInvoice
+    };

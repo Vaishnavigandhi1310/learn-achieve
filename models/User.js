@@ -31,7 +31,14 @@ const userSchema = new mongoose.Schema({
   otpExpiry: {
     type: Date,
   },
-  isVerified: { type: Boolean, default: false } 
-}, { timestamps: true });
+  isVerified: { type: Boolean, default: false } ,
+  packageId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Package',  // Reference to Package model
+  }
+
+},
+
+ { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

@@ -201,8 +201,7 @@ const verifyForgotOtp = async (req, res) => {
     user.otpExpiry = null;
     await user.save();
 
-    // Generate token valid only for password reset
-    const token = generateToken(user._id); // short expiry if possible
+    const token = generateToken(user._id); 
 
     res.status(200).json({
       message: "OTP verified successfully",
@@ -369,6 +368,27 @@ const verifyLoginOtp = async (req, res) => {
   }
 };
 
+const getAllUserTaskData = async (req,res)=>{
+    // const {id} = req.params;
+    try {
+      let user = await User.aggregate([
+        {
+          $lookup:{
+            from:"orders",
+            localField:"_id",
+            foreignField:"userId",
+            as:"allData"
+          }
+        }
+      
+      ])
+      res.status(200).send({message:"Success !",data:user});
+    } catch (error) {
+      res.status(400).send({message:"failed",data:"",error:error});
+    }
+    
+  }
+
 
 
 module.exports = {
@@ -381,5 +401,6 @@ module.exports = {
   verifyOtp,
   resetPassword,
   loginWithOtp,
-  verifyLoginOtp
+  verifyLoginOtp,
+  getAllUserTaskData
 };
