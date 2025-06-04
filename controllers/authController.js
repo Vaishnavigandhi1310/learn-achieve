@@ -368,6 +368,26 @@ const verifyLoginOtp = async (req, res) => {
   }
 };
 
+// const getAllUserTaskData = async (req,res)=>{
+//     // const {id} = req.params;
+//     try {
+//       let user = await User.aggregate([
+//         {
+//           $lookup:{
+//             from:"orders",
+//             localField:"_id",
+//             foreignField:"userId",
+//             as:"allData"
+//           }
+//         }
+      
+//       ])
+//       res.status(200).send({message:"Success !",data:user});
+//     } catch (error) {
+//       res.status(400).send({message:"failed",data:"",error:error});
+//     }
+    
+//   }
 const getAllUserTaskData = async (req,res)=>{
     // const {id} = req.params;
     try {
@@ -388,7 +408,6 @@ const getAllUserTaskData = async (req,res)=>{
     }
     
   }
-
 
 
 module.exports = {
