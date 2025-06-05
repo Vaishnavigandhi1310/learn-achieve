@@ -2,6 +2,7 @@ const User = require("../models/User");
 const { otp, sentOtp } = require("../utils/helper");
 const bcrypt = require('bcrypt');
 const generateToken = require("../utils/generateToken")
+const mongoose = require('mongoose')
 const {
   loginUserService
 } = require("../services/userService");
@@ -389,6 +390,40 @@ const getAllUserTaskData = async (req,res)=>{
     
   }
 
+  const getLoggedInUserTaskData = async (req, res) => {
+  const { userId } = req.auth;
+
+  try {
+    const userData = await User.aggregate([
+      {
+        $match: { _id: new mongoose.Types.ObjectId(userId) }  
+      },
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "userId",
+          as: "orders"
+        }
+      }
+    ]);
+
+    if (!userData || userData.length === 0) {
+      return res.status(404).json({ message: "User not found or no data available" });
+    }
+
+    res.status(200).json({
+      message: "User data ",
+      data: userData[0] 
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to get user data",
+      error: error.message
+    });
+  }
+};
+
 
 
 module.exports = {
@@ -402,5 +437,6 @@ module.exports = {
   resetPassword,
   loginWithOtp,
   verifyLoginOtp,
-  getAllUserTaskData
+  getAllUserTaskData,
+  getLoggedInUserTaskData
 };
