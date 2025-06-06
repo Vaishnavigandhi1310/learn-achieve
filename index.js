@@ -7,7 +7,6 @@ const authRoutes = require('./routes/authRoutess');
 const packageRoutes = require('./routes/packageRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
-const mockTestRoutes = require('./routes/mockTestRoutes');
 
 dotenv.config();
 
@@ -27,7 +26,6 @@ app.use('/api/packages', packageRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/mock-tests', mockTestRoutes);
 
 app.get('/', (req, res) => {
   res.send('API is running...');
